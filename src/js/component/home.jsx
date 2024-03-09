@@ -5,6 +5,9 @@ import rigoImage from "../../img/rigo-baby.jpg";
 import TodoList from "./TodoList";
 import TodoApp from "./TodoList";
 
+
+
+
 //create your first component
 const Home = () => {
 	return (
