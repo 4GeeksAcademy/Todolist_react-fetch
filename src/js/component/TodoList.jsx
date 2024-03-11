@@ -1,13 +1,33 @@
-
 import React, { useState, useEffect } from 'react';
 
 const TodoApp = () => {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+useEffect( ()=> {
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+const raw = JSON.stringify([]);
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw
+};
+
+fetch("https://playground.4geeks.com/apis/fake/todos/user/marc_todo", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
+
+
+
+}, []);
+
+useEffect(()=>{
+  fetchData()
+},[])
 
   const fetchData = async () => {
     const endpoint = 'https://playground.4geeks.com/apis/fake/todos/user/marc_todo';
@@ -40,7 +60,7 @@ const TodoApp = () => {
 
   const handleAddTask =  () => {
     if (inputValue.trim() !== '') {
-      const newTasks = [...tasks, inputValue];
+      const newTasks = [...tasks, {label: inputValue, done: false}];
       setTasks(newTasks);
       saveDataToApi(newTasks);
       setInputValue('');
@@ -51,6 +71,7 @@ const TodoApp = () => {
     const newTasks = [...tasks];
     newTasks.splice(index, 1);
     setTasks(newTasks);
+    saveDataToApi(newTasks);
   };
 
   return (

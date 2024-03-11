@@ -1,93 +1,102 @@
-/*import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const TodoApp = () => {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-async function fetchData(endpoint){
+  const fetchData = async () => {
+    const endpoint = 'https://playground.4geeks.com/apis/fake/todos/user/marc_todo';
     const response = await fetch(endpoint);
-    const data = await response.json()
-    console.log(data);
-    setTasks(data)
-}
+    const data = await response.json();
+    setTasks(data);
+  };
 
-const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+  const saveDataToApi = async (data_api) => {
+    try {
+      const endpoint = 'https://playground.4geeks.com/apis/fake/todos/user/marc_todo';
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data_api),
+      };
+      
+      await fetch(endpoint, options);
+    } catch (error) {
+      console.error('Error al actualizar en la API:', error);
+    }
+  };
 
-const raw = JSON.stringify([
-  inputValue
-]);
+  const deleteDataFromApi = async () => {
+    try {
+      const endpoint = 'https://playground.4geeks.com/apis/fake/todos/user/marc_todo';
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
 
-const requestOptions = {
-  method: "PUT",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow"
-};
-useEffect( ()=> {
-  fetch("https://playground.4geeks.com/apis/fake/todos/user/marc_todo", requestOptions)
-  .then((response) => response.text())
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));
-},[setInputValue])
-
-
-
-
-  useEffect( ()=> {
-    fetchData("https://playground.4geeks.com/apis/fake/todos/user/marc_todo")
-    .then(resp => resp.json)
-    .then(resp => console.log(resp));
-  },[]) 
+      await fetch(endpoint, options);
+    } catch (error) {
+      console.error('Error al eliminar en la API:', error);
+    }
+  };
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
- 
+
   const handleAddTask = () => {
     if (inputValue.trim() !== '') {
-      
-      setTasks([...tasks, inputValue]);
+      const newTasks = [...tasks, { label: inputValue, done: false }];
+      setTasks(newTasks);
+      saveDataToApi(newTasks);
       setInputValue('');
     }
   };
 
-  const handleDeleteTask = (index) => {
+  const handleDeleteTask = async (index) => {
     const newTasks = [...tasks];
     newTasks.splice(index, 1);
     setTasks(newTasks);
+    await deleteDataFromApi();
   };
 
   return (
     <div className="container">
-    <h1>Lista de Tareas</h1>
-    <div className="input-container">
-      <input
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        placeholder="Añadir tarea..."
-      />
-      <button onClick={handleAddTask}>Añadir</button>
+      <h1>Lista de Tareas</h1>
+      <div className="input-container">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder="Añadir tarea..."
+        />
+        <button onClick={handleAddTask}>Añadir</button>
+      </div>
+      <div className='tarea'>
+        <ul>
+          {tasks.map((task, index) => (
+            <li key={index}>
+              {task.label}
+              <button
+                className="delete-button"
+                onClick={() => handleDeleteTask(index)}
+              >
+                Eliminar
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-    <div className='tarea'>
-      <ul>
-        {tasks.map((task, index) => (
-          <li key={index}>
-            {task.label}
-            <button
-              className="delete-button"
-              onClick={() => handleDeleteTask(index)}
-            >
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
   );
 };
 
-export default TodoApp;*/
+export default TodoApp;
